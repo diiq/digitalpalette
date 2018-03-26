@@ -19,6 +19,7 @@ class Pigment(Model, db.Model):
         return {
             'id': self.id,
             'rgb': self.color().to_rgb().tolist(),
+            'hex': self.color().to_hex(),
             'name': self.name,
             'url': route_for('pigment', pigment_id=self.id)
         }
@@ -27,6 +28,7 @@ class Pigment(Model, db.Model):
         return {
             'id': self.id,
             'rgb': self.color().to_rgb().tolist(),
+            'hex': self.color().to_hex(),
             'name': self.name,
             'spectrum': self.spectrum,
             'url': route_for('pigment', pigment_id=self.id)

@@ -13,7 +13,7 @@ def pigments():
         return [p.short_dict() for p in Pigment.query.all()]
 
 
-@app.route("/v1/pigment/<int:pigment_id>", methods=['GET'])
+@app.route("/v1/pigments/<int:pigment_id>", methods=['GET'])
 def pigment(pigment_id):
     """
     Get full specs on a pigment.

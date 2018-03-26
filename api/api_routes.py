@@ -11,4 +11,5 @@ def api_routes():
     if request.method == 'GET':
         return {
             'pigments': route_for('pigments'),
+            'mixes': route_for('mixes'),
         }

@@ -1,4 +1,5 @@
 import api.v1.pigment_routes
+import api.v1.mix_routes
 from api import app
 from api.routing import route_for
 from flask import request
@@ -12,4 +13,5 @@ def v1_api_routes():
     if request.method == 'GET':
         return {
             'pigments': route_for('pigments'),
+            'mixes': route_for('mixes'),
         }

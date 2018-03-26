@@ -23,6 +23,9 @@ class Color():
         b = np.sum(np.multiply(self.spectrum, observers.blue))
         return np.array([self.color_part(x) for x in [r, g, b]])
 
+    def to_hex(self):
+        return "{0:02x}{1:02x}{2:02x}".format(*(self.to_rgb()*255).astype(int))
+
     def to_str(self):
         return "{0}: rgb({1:.2}, {2:.2}, {3:.2})".format(self.name, *self.to_rgb())
 
