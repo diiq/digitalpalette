@@ -4,11 +4,21 @@ verify_ssl = true
 name = "pypi"
 
 [dev-packages]
+jupyter = "*"
+matplotlib = "*"
+ipython = "*"
+"Fabric3" = "*"
+Flask-Failsafe = "*"
 
 [packages]
 numpy = "*"
-jupyter = "*"
-matplotlib = "*"
+Flask-API = "*"
+Flask-SQLAlchemy = "*"
+Flask = "*"
+alembic = "*"
+Flask-Failsafe = "*"
+Flask-Cors = "*"
+"psycopg2-binary" = "*"
 
 [requires]
 python_version = "3.6"
