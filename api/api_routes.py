@@ -1,13 +1,12 @@
-import api.v1.pigment_routes
 from api import app
 from api.routing import route_for
 from flask import request
 
 
-@app.route("/v1/", methods=['GET'])
-def v1_api_routes():
+@app.route("/", methods=['GET'])
+def api_routes():
     """
-    A pigment and palette API. Version 1.
+    A pigment and palette API.
     """
     if request.method == 'GET':
         return {

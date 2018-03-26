@@ -1,7 +1,9 @@
 import csv
 import numpy as np
 import math
-import color
+import os
+
+import lib.color as color
 
 
 # The data I have are poorly calibrated; reflectance never drops below
@@ -9,6 +11,8 @@ import color
 # that, but work imperfectly.
 OFFSET = 18
 DIVISOR = 750
+data_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), './paints.csv')
+
 
 def interpolate(xs, ys, desired_x):
     before = np.where(xs < desired_x)[0][-1]
@@ -18,7 +22,7 @@ def interpolate(xs, ys, desired_x):
     return (ys[before] + ys[after]) / 2
 
 
-def load_paints(file='./paints.csv'):
+def load_paints(file=data_file):
     paints = {}
     with open(file) as csvfile:
         reader = csv.reader(csvfile)
@@ -52,7 +56,7 @@ lacdye = color.Color(paints['lacdye'], 1, "lacdye")
 carmine_lake = color.Color(paints['carminelake'], 1, "carminelake")
 vermilion = color.Color(paints['vermilion'], 1, "vermilion")
 real_gar = color.Color(paints['realgar'], 1, "realgar")
-yellow_lake = color.Color(paints['yellowlake'], 1, "yellow lake")
+yellow_lake = color.Color(paints['yellowlakeresed'], 1, "yellow lake")
 massicot = color.Color(paints['massicot'], 1, "massicot")
 yellow_ochre = color.Color(paints['yellowochre'], 1, "yellowochre")
 gamboge = color.Color(paints['gamboge'], 1, "gamboge")
@@ -97,7 +101,6 @@ color_names = ["lithopone",
                "titanium_white",
                "zinc_white",
                "lead_white",
-               "chalk",
                "gypsum",
                "lamp_black",
                "bone_black",
@@ -142,6 +145,5 @@ color_names = ["lithopone",
                "red_lead",
                "red_ochre",
                "raw_sienna",
-               "burnt_sienna",
                "raw_umber",
                "burnt_umber"]

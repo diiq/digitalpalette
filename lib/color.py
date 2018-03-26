@@ -1,10 +1,10 @@
 import numpy as np
 import math
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches
+#import matplotlib.pyplot as plt
+#import matplotlib.patches as patches
 from functools import reduce
 
-import observers
+import lib.observers as observers
 
 
 class Color():

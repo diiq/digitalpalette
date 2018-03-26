@@ -21,8 +21,10 @@ def create():
 @task
 def seed():
     """Inserts seed data into the db for testing and development purposes"""
-    print("OK! I did nothing.")
-
+    from api.db import db
+    from seeds import seed
+    seed()
+    db.session.commit()
 
 @task
 def drop():

@@ -19,6 +19,7 @@ alembic = "*"
 Flask-Failsafe = "*"
 Flask-Cors = "*"
 "psycopg2-binary" = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.6"

@@ -11,6 +11,8 @@ class Config(object):
         return os.environ.get('ROOT_URL')
 
     def database_connection_string(self):
+        if os.environ.get('DATABASE_URL'):
+            return os.environ['DATABASE_URL']
         return "postgresql://%s:%s@%s:%s/%s" % (
             os.environ.get('DATABASE_USER'),
             os.environ.get('DATABASE_PASSWORD'),
