@@ -7,10 +7,10 @@ name = "pypi"
 jupyter = "*"
 matplotlib = "*"
 ipython = "*"
-"Fabric3" = "*"
 Flask-Failsafe = "*"
 
 [packages]
+"Fabric3" = "*"
 numpy = "*"
 Flask-API = "*"
 Flask-SQLAlchemy = "*"
