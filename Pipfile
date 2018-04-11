@@ -21,6 +21,10 @@ Flask-Cors = "*"
 "psycopg2-binary" = "*"
 gunicorn = "*"
 "a4bbc5f" = {file = "https://github.com/flask-api/flask-api/archive/develop.zip"}
+pandas = "*"
+sniffer = "*"
+macfsevents = "*"
+rednose = "*"
 
 [requires]
 python_version = "3.6"
