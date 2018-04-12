@@ -5,22 +5,14 @@ import os
 
 import lib.color as color
 
-
+# Data from 10.18236/econs2.201410 . It's shite and I hate it.
+# Same data as https://chsopensource.org/tools-2/pigments-checker/
 # The data I have are poorly calibrated; reflectance never drops below
 # 20% and often goes over 100%. These factors attempt to correct for
 # that, but work imperfectly.
 OFFSET = 18
 DIVISOR = 750
 data_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), './paints.csv')
-
-
-def interpolate(xs, ys, desired_x):
-    before = np.where(xs < desired_x)[0][-1]
-    after = np.where(xs > desired_x)[0][0]
-    # cheating, but doing prop'ly probably unnecessary given how small
-    # the steps are in the original data.
-    return (ys[before] + ys[after]) / 2
-
 
 def load_paints(file=data_file):
     paints = {}
@@ -34,7 +26,7 @@ def load_paints(file=data_file):
 
     desired_frequencies = range(390, 831, 5)
     for name in paints:
-        paints[name] = np.array([interpolate(frequencies, paints[name], x) for x in desired_frequencies])
+        paints[name] = np.array([color.interpolate(frequencies, paints[name], x) for x in desired_frequencies])
 
     frequencies = np.array(desired_frequencies)
     return paints, frequencies

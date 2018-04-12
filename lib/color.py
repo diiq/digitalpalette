@@ -35,7 +35,7 @@ class Color():
         return "{0:02x}{1:02x}{2:02x}".format(*(self.to_rgb()*255).astype(int))
 
     def to_str(self):
-        return "{0}: rgb({1:.2}, {2:.2}, {3:.2})".format(self.name, *self.to_rgb())
+        return "{0}: rgb({1}, {2}, {3})".format(self.name, *[int(x * 255) for x in self.to_rgb()])
 
     def swatch(self):
         box = plt.figure(figsize=(10, 5)).add_subplot(111)
@@ -80,3 +80,12 @@ class Mix():
     def name(self):
         total_portion = sum([color.proportion for color in self.proportional_colors])
         return " + ".join(["{0:.1f}% {1}".format(100*color.proportion/total_portion, color.name) for color in self.proportional_colors])
+
+
+
+def interpolate(xs, ys, desired_x):
+    before = np.where(xs < desired_x)[0][-1]
+    after = np.where(xs > desired_x)[0][0]
+    # cheating, but doing prop'ly probably unnecessary given how small
+    # the steps are in the original data.
+    return (ys[before] + ys[after]) / 2

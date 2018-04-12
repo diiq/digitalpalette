@@ -3,7 +3,33 @@ import unittest
 
 
 class TestNumericalHue(unittest.TestCase):
-    pass
+    def test_numerical_hue(self):
+        hue = munsell.numerical_hue("5.0Y")
+        self.assertEquals(hue, 25.0)
+
+        hue = munsell.numerical_hue("2.7BG")
+        self.assertEquals(hue, 52.7)
+
+
+class TestNameForHue(unittest.TestCase):
+    def test_name_for_hue(self):
+        name = munsell.name_for_hue(25)
+        self.assertEquals(name, "5.0Y")
+
+        name = munsell.name_for_hue(52.7)
+        self.assertEquals(name, "2.7BG")
+
+        name = munsell.name_for_hue(97.5)
+        self.assertEquals(name, "7.5RP")
+
+
+class TestNameForColor(unittest.TestCase):
+    def test_name_for_color(self):
+        name = munsell.name_for_color(25, 3, 2)
+        self.assertEquals(name, "5.0Y 3.0/2.0")
+
+        name = munsell.name_for_color(52.7, 4, 1.1)
+        self.assertEquals(name, "2.7BG 4.0/1.1")
 
 
 class TestNearestHues(unittest.TestCase):
@@ -68,3 +94,48 @@ class TestComplement(unittest.TestCase):
     def test_with_overflow(self):
         new_hue = munsell.complement(70)
         self.assertEquals(new_hue, 20)
+
+
+class TestGetColorFor(unittest.TestCase):
+    # Brittle tests, but it's someplace to start for refactoring db
+    def test_direct_sample(self):
+        new_color = munsell.get_color_for(5, 5, 6)
+        self.assertListEqual(list(new_color.to_rgb()), [0.6733446600403031, 0.4058324881477391, 0.39677207929969144])
+
+    def test_hue_interpolation(self):
+        new_color = munsell.get_color_for(5.5, 5, 6)
+        self.assertListEqual(list(new_color.to_rgb()), [0.674749439767226, 0.40717094319347696, 0.3912341887734641])
+
+    def test_value_interpolation(self):
+        new_color = munsell.get_color_for(5, 5.5, 6)
+        self.assertListEqual(list(new_color.to_rgb()), [0.724002585921689, 0.4562163455617211, 0.44522484509479693])
+
+    def test_chroma_interpolation(self):
+        new_color = munsell.get_color_for(5, 5, 5.5)
+        self.assertListEqual(list(new_color.to_rgb()), [0.6600346240464608, 0.41275205649334307, 0.4034785099114721])
+
+    def test_multi_interpolation(self):
+        new_color = munsell.get_color_for(5.5, 5.5, 5.5)
+        self.assertListEqual(list(new_color.to_rgb()), [0.7094404463114915, 0.4628979516270451, 0.4457307548127278])
+
+    def test_multi_interpolation_hvc(self):
+        new_color = munsell.get_color_for(5.5, 4.5, 3.5)
+        self.assertEqual(new_color.hue, 5.5)
+        self.assertEqual(new_color.value, 4.5)
+        self.assertEqual(new_color.chroma, 3.5)
+        self.assertEqual(new_color.name, "5.5R 4.5/3.5")
+
+    def test_extreme_lows(self):
+        new_color = munsell.get_color_for(2, 1, 0)
+        self.assertEqual(new_color.hue, 2)
+
+    def test_extreme_highs(self):
+        new_color = munsell.get_color_for(85, 7, 12)
+        self.assertEqual(new_color.hue, 85)
+
+
+class TestColorSampleExists(unittest.TestCase):
+    def test_color_sample_exists(self):
+        self.assertEqual(munsell.color_sample_exists(5, 5, 6), True)
+        self.assertEqual(munsell.color_sample_exists(5.4, 5, 6), False)
+        self.assertEqual(munsell.color_sample_exists(5.2, 5.1, 6.1), False)
