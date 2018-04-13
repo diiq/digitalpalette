@@ -30,7 +30,7 @@ class MunsellSample(color.Color):
 # and 100; 50 steps takes you to a (pretty darn exact) complement.
 
 HUE_NAMES = ['R', 'YR', 'Y', 'GY', 'G', 'BG', 'B', 'PB', 'P', 'RP', "XXXXX"]
-HUE_NAMES_TO_NUMBERS = dict((v, 10 * k) for k, v in enumerate(HUE_NAMES))
+HUE_NAMES_TO_NUMBERS = {v: 10 * i for i, v in enumerate(HUE_NAMES)}
 hue_regex = re.compile('(\d+(\.\d+)?)([RYGBP]{1,2})')
 def numerical_hue(hue):
     """Parse a hue name into a float from 0 to 100."""
@@ -237,7 +237,7 @@ class InterpolatedMunsellColorDatabase(ExpandedMunsellSampleDatabase):
     def nearest_hues(self, hue):
         # There is a sample hue every 2.5 steps, so round to the nearest 2.5
         low_hue = math.floor(hue * 1/2.5)*2.5
-        high_hue = (math.ceil(hue * 1/2.5)*2.5) % 100
+        high_hue = math.ceil(hue * 1/2.5)*2.5
         return low_hue, high_hue
 
     def mix_to_hue(self, hue, value, chroma, depth=0):
@@ -245,7 +245,7 @@ class InterpolatedMunsellColorDatabase(ExpandedMunsellSampleDatabase):
         low_col = self._get_color_for(low_hue, value, chroma, depth+1)
         if (low_hue == hue):
             return low_col
-        high_col = self._get_color_for(high_hue, value, chroma, depth+1)
+        high_col = self._get_color_for(high_hue % 100, value, chroma, depth+1)
         mix = color.Mix([high_col.p(hue - low_hue), low_col.p(high_hue - hue)])
         return MunsellSample(mix.spectrum, hue, value, chroma)
 
