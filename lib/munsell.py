@@ -44,7 +44,7 @@ def numerical_hue(hue):
 
 def name_for_hue(hue):
     if isinstance(hue, str):
-        return hue
+        hue = numerical_hue(hue)
     return "{0:1.1f}{1}".format(hue % 10, HUE_NAMES[int(math.floor(hue / 10))])
 
 def name_for_color(hue, value, chroma):
@@ -420,7 +420,7 @@ def rainbow(value, chroma, steps, offset=0):
 
 
 def page(hue, value_steps=10, chroma_steps=10):
-    return [[MunsellColor(hue, value, chroma) for chroma in np.arange(0, 14.1, 14.0/(chroma_steps-1))] for value in np.arange(0.5, 9.6, 9.0/(value_steps-1))]
+    return [[MunsellColor(hue, value, chroma) for chroma in np.arange(0, 14.1, 14.0/(chroma_steps-1))] for value in np.arange(1, 9.1, 8.0/(value_steps-1))]
 
 
 
