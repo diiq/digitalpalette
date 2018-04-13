@@ -12,4 +12,5 @@ def api_routes():
         return {
             'pigments': route_for('pigments'),
             'mixes': route_for('mixes'),
+            'munsell': route_for('munsell_routes'),
         }

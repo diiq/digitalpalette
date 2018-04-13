@@ -88,7 +88,7 @@ def ladder():
 
 
 @app.route("/v1/munsell/mix", methods=['GET'])
-def mix():
+def munsell_mix():
     """A paint-mixed in-between color, mixed from `a_color` and `b_color`
     in proportion based on `a_parts` and `b_parts`.
 
