@@ -36,7 +36,10 @@ def numerical_hue(hue):
     """Parse a hue name into a float from 0 to 100."""
     if isinstance(hue, str):
         match = hue_regex.match(hue)
-        return float(match[1]) + HUE_NAMES_TO_NUMBERS[match[3]]
+        if match:
+            return float(match[1]) + HUE_NAMES_TO_NUMBERS[match[3]]
+        else:
+            return float(hue)
     return hue
 
 def name_for_hue(hue):
@@ -414,6 +417,10 @@ def rainbow(value, chroma, steps, offset=0):
     a = MunsellColor(offset, value, chroma)
     b = MunsellColor((offset - .01) % 100, value, chroma)
     return [numerical_mix(b, a, float(x)/steps, False) for x in range(steps)]
+
+
+def page(hue, value_steps=10, chroma_steps=10):
+    return [[MunsellColor(hue, value, chroma) for chroma in np.arange(0, 14.1, 14.0/(chroma_steps-1))] for value in np.arange(0.5, 9.6, 9.0/(value_steps-1))]
 
 
 

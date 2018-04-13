@@ -1,7 +1,7 @@
 from api import app
 from flask import request, abort
 from flask_api import FlaskAPI, status, exceptions
-from lib.munsell import color_from_name, numerical_ladder, mix_ladder, rainbow
+from lib.munsell import color_from_name, numerical_ladder, mix_ladder, rainbow, page
 from lib.color import Mix
 
 
@@ -96,26 +96,45 @@ def munsell_mix():
 
     """
     if request.method == 'GET':
-       a = color("a_color")
-       b = color("b_color")
-       a_prop = float(request.args.get("a_parts") or 1)
-       b_prop = float(request.args.get("b_parts") or 1)
-       return Mix([a.p(a_prop), b.p(b_prop)]).stats_dict()
+        a = color("a_color")
+        b = color("b_color")
+        a_prop = float(request.args.get("a_parts") or 1)
+        b_prop = float(request.args.get("b_parts") or 1)
+        return Mix([a.p(a_prop), b.p(b_prop)]).stats_dict()
 
 
 @app.route("/v1/munsell/rainbow", methods=['GET'])
 def munsell_rainbow():
-    """A raindow is an even sampling of hues at a single value and chroma.
+    """A rainbow is an even sampling of hues at a single value and chroma.
 
     Takes `value`, `chroma`, `steps` and an optional `offset`, which sets the starting hue.
 
     """
     if request.method == 'GET':
-       value = float(request.args.get("value"))
-       chroma = float(request.args.get("chroma"))
-       steps = int(request.args.get("steps") or 10)
-       offset = float(request.args.get("offset") or 0)
+        value = float(request.args.get("value"))
+        chroma = float(request.args.get("chroma"))
+        steps = int(request.args.get("steps") or 10)
+        offset = float(request.args.get("offset") or 0)
 
-       if not value or not chroma:
-           abort(422, "You must specify a value and a chroma")
-       return [x.stats_dict() for x in rainbow(value, chroma, steps, offset)]
+        if not value or not chroma:
+            abort(422, "You must specify a value and a chroma")
+        return [x.stats_dict() for x in rainbow(value, chroma, steps, offset)]
+
+
+@app.route("/v1/munsell/page", methods=['GET'])
+def munsell_page():
+    """A page is an even sampling of across value and chroma for a given `hue`.
+    Optionally takes `value_steps` and `chroma_steps`, each fo which default to 0.
+
+    """
+    if request.method == 'GET':
+        hue = request.args.get("hue")
+        chroma_steps = int(request.args.get("chroma_steps") or 10)
+        value_steps = int(request.args.get("value_steps") or 10)
+
+        if not hue:
+            abort(422, "You must specify a hue")
+
+        this_page = page(hue, value_steps, chroma_steps)
+
+        return [[x.stats_dict() for x in ladder] for ladder in this_page]
