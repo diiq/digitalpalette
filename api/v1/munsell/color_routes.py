@@ -1,7 +1,7 @@
 from api import app
 from flask import request, abort
 from flask_api import FlaskAPI, status, exceptions
-from lib.munsell import color_from_name, numerical_ladder, mix_ladder
+from lib.munsell import color_from_name, numerical_ladder, mix_ladder, rainbow
 from lib.color import Mix
 
 
@@ -101,3 +101,21 @@ def munsell_mix():
        a_prop = float(request.args.get("a_parts") or 1)
        b_prop = float(request.args.get("b_parts") or 1)
        return Mix([a.p(a_prop), b.p(b_prop)]).stats_dict()
+
+
+@app.route("/v1/munsell/rainbow", methods=['GET'])
+def munsell_rainbow():
+    """A raindow is an even sampling of hues at a single value and chroma.
+
+    Takes `value`, `chroma`, `steps` and an optional `offset`, which sets the starting hue.
+
+    """
+    if request.method == 'GET':
+       value = float(request.args.get("value"))
+       chroma = float(request.args.get("chroma"))
+       steps = int(request.args.get("steps") or 10)
+       offset = float(request.args.get("offset") or 0)
+
+       if not value or not chroma:
+           abort(422, "You must specify a value and a chroma")
+       return [x.stats_dict() for x in rainbow(value, chroma, steps, offset)]

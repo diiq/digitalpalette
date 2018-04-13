@@ -338,11 +338,19 @@ class MunsellColor(color.Color):
         self.hue = numerical_hue(hue)
         self.value = value
         self.chroma = chroma
+        self.actual_chroma = chroma
         self.proportion = 1
+        self.imprecise = False
+        self.clipped = False
 
     @property
     def spectrum(self):
-        return colors.get_color_for(self.hue, self.value, self.chroma).spectrum
+        col = colors.get_color_for(self.hue, self.value, self.chroma)
+        if col.chroma != self.chroma:
+            self.imprecise = True
+            self.actual_chroma = col.chroma
+
+        return col.spectrum
 
     def complement(self):
         return MunsellColor(complement(self.hue), self.value, self.chroma)
@@ -356,17 +364,28 @@ class MunsellColor(color.Color):
         shade = MunsellColor(self.hue, self.value * 0.8, self.chroma)
         return color.Mix([sky_color.p(0.3), shade])
 
+    def stats_dict(self):
+        d = super().stats_dict()
+        d["hue"] = self.hue
+        d["value"] = self.value
+        d["chroma"] = self.chroma
+        d["actual_chroma"] = self.actual_chroma
+        return d
 
 def complement(hue):
     return (hue + 50) % 100
 
 
-def numerical_mix(a, b, proportion):
+def numerical_mix(a, b, proportion, shortest_route=True):
 
     def mod_additive_proportional(a, b, proportion, mod=100):
         if abs(a - b) < 50:
             return additive_proportional(a, b, proportion)
-        elif a < b:
+        else:
+            return long_way_additive_proportional(a, b, proportion)
+
+    def long_way_additive_proportional(a, b, proportion, mod=100):
+        if a < b:
             return additive_proportional(a+mod, b, proportion) % mod
         else:
             return additive_proportional(a, b+mod, proportion) % mod
@@ -374,19 +393,27 @@ def numerical_mix(a, b, proportion):
     def additive_proportional(a, b, proportion):
         return a * proportion + b * (1 - proportion)
 
-    hue = mod_additive_proportional(a.hue, b.hue, proportion)
+    if shortest_route:
+        hue = mod_additive_proportional(a.hue, b.hue, proportion)
+    else:
+        hue = long_way_additive_proportional(a.hue, b.hue, proportion)
+
     value = additive_proportional(a.value, b.value, proportion)
     chroma = additive_proportional(a.chroma, b.chroma, proportion)
     return MunsellColor(hue, value, chroma)
 
 def numerical_ladder(a, b, steps):
-    # todo: never goes through 0() even if that's the short road
     count = steps - 1
     return [numerical_mix(b, a, float(x)/count) for x in range(steps)]
 
 def mix_ladder(a, b, steps):
     count = steps - 1.0
     return [color.Mix([b.p(x/count), a.p((count-x)/count)]) for x in range(steps)]
+
+def rainbow(value, chroma, steps, offset=0):
+    a = MunsellColor(offset, value, chroma)
+    b = MunsellColor((offset - .01) % 100, value, chroma)
+    return [numerical_mix(b, a, float(x)/steps, False) for x in range(steps)]
 
 
 

@@ -35,4 +35,5 @@ def munsell_routes():
             'shadow': route_for('shadow', color="5.0R 3/7"),
             'ladder': route_for('ladder', start_color="5.0R 3/7", end_color="7.0GY 8/10", steps=5),
             'mix': route_for('munsell_mix', a_color="5.0R 3/7", b_color="7.0GY 8/10"),
+            'rainbow': route_for('munsell_rainbow', value=5, chroma=10, steps=10),
         }

@@ -18,6 +18,8 @@ class Color():
         self.proportion = proportion
         self.name = name
         self.frequencies = frequencies
+        self.imprecise = False
+        self.clipped = False
 
     def color_part(self, x):
         return pow(max(min(x, 1), 0), 1/2.2)
@@ -26,6 +28,10 @@ class Color():
         r = np.sum(np.multiply(self.spectrum, observers.red))
         g = np.sum(np.multiply(self.spectrum, observers.green))
         b = np.sum(np.multiply(self.spectrum, observers.blue))
+        if (any([x > 1 or x < 0 for x in [r, g, b]])):
+            self.imprecise = True
+            self.clipped = True
+
         return [self.color_part(x) for x in [r, g, b]]
 
     def to_hex(self):
@@ -54,11 +60,12 @@ class Color():
 
     def stats_dict(self):
         rgb = self.to_rgb()
-        return {
-            "name": self.name,
+        return {            "name": self.name,
             "rgb": rgb,
             "rgb255": [int(x * 255) for x in rgb],
-            "hex": "#{0:02x}{1:02x}{2:02x}".format(*[int(x * 255) for x in rgb])
+            "hex": "#{0:02x}{1:02x}{2:02x}".format(*[int(x * 255) for x in rgb]),
+            "imprecise": self.imprecise,
+            "clipped": self.clipped,
         }
 
 
