@@ -119,7 +119,7 @@ class ExpandedMunsellSampleDatabase(MunsellSampleDatabase):
         black = self.color_list[1486]
         i = len(self.color_list) - 1
         for doublehue in range(5, 201, 5):
-            for chroma in range(0, 2, 2):
+            for chroma in range(0, 3, 2):
                 hue = doublehue / 2.0
 
                 nblack = black.p(1)
@@ -412,7 +412,7 @@ def rainbow(value, chroma, steps, offset=0):
 
 
 def page(hue, value_steps=10, chroma_steps=10):
-    return [[MunsellColor(hue, value, chroma) for chroma in np.arange(0, 14.1, 14.0/(chroma_steps-1))] for value in np.arange(1, 9.1, 8.0/(value_steps-1))]
+    return [[MunsellColor(hue, value, chroma) for chroma in np.arange(0, 16.1, 16.0/(chroma_steps-1))] for value in np.arange(1, 9.1, 8.0/(value_steps-1))]
 
 
 
