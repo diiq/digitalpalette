@@ -344,7 +344,7 @@ class MunsellColor(color.Color):
         if col.chroma != self.chroma:
             self.imprecise = True
             self.actual_chroma = col.chroma
-
+            self.name = col.name
         return col.spectrum
 
     def complement(self):
@@ -363,8 +363,8 @@ class MunsellColor(color.Color):
         d = super().stats_dict()
         d["hue"] = self.hue
         d["value"] = self.value
-        d["chroma"] = self.chroma
-        d["actual_chroma"] = self.actual_chroma
+        d["chroma"] = self.actual_chroma
+        d["attempted_chroma"] = self.chroma
         return d
 
 def complement(hue):
