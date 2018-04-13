@@ -45,6 +45,7 @@ def numerical_hue(hue):
 def name_for_hue(hue):
     if isinstance(hue, str):
         hue = numerical_hue(hue)
+    hue = hue % 100
     return "{0:1.1f}{1}".format(hue % 10, HUE_NAMES[int(math.floor(hue / 10))])
 
 def name_for_color(hue, value, chroma):
@@ -193,22 +194,13 @@ class ExpandedMunsellSampleDatabase(MunsellSampleDatabase):
     def calculate_overchroma(self, hue, value, direction=-1):
         current = self.max_chroma_sample(hue, value)
 
-        if not self.color_sample_exists(hue, value + direction * 2):
+        if not self.color_sample_exists(hue, value + direction * 2, current.chroma + 2):
+            return
+        if not self.color_sample_exists(hue, value + direction * 1, current.chroma + 2):
             return
 
-        a_col = self.max_chroma_sample(hue, value + direction * 1)
-        if a_col.chroma < current.chroma:
-            return
-
-        b_col = self.max_chroma_sample(hue, value + direction * 2)
-        if b_col.chroma < current.chroma:
-            return
-
-        if b_col.chroma < a_col.chroma:
-            a_col = self.color_sample(hue, value + direction * 1, b_col.chroma)
-
-        if b_col.chroma > a_col.chroma:
-            b_col = self.color_sample(hue, value + direction * 2, a_col.chroma)
+        a_col = self.color_sample(hue, value + direction * 1,  current.chroma + 2)
+        b_col = self.color_sample(hue, value + direction * 2,  current.chroma + 2)
 
         spectrum = np.add(np.subtract(a_col.spectrum, b_col.spectrum), a_col.spectrum).clip(min=0)
         return MunsellSample(spectrum, hue, value, a_col.chroma)
