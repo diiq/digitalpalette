@@ -47,6 +47,11 @@ def name_for_hue(hue):
 def name_for_color(hue, value, chroma):
     return "{0} {1:1.1f}/{2:1.1f}".format(name_for_hue(hue), value, chroma)
 
+name_regex = re.compile('(.*[RYGBP]{1,2}) ?(.*)[\,\/](.*)')
+def color_from_name(name):
+    match = name_regex.match(name)
+    return MunsellColor(name_for_hue(match[1]), float(match[2]), float(match[3]))
+
 
 # We'll need to rapidly search by hue, value, and chroma, so we create
 # an in-memory database of color samples.
@@ -66,7 +71,8 @@ class MunsellSampleDatabase():
         self.color_list = colors
 
     def create_database(self):
-        conn = sqlite3.connect(":memory:")
+        # God knows this is a bad idea
+        conn = sqlite3.connect(":memory:", check_same_thread=False)
         c = conn.cursor()
         c.execute('CREATE TABLE colors (hue float, value float, chroma float, i integer)')
         self.cursor = c
@@ -201,7 +207,8 @@ class ExpandedMunsellSampleDatabase(MunsellSampleDatabase):
         if b_col.chroma > a_col.chroma:
             b_col = self.color_sample(hue, value + direction * 2, a_col.chroma)
 
-        return MunsellSample(np.add(np.subtract(a_col.spectrum, b_col.spectrum), a_col.spectrum).clip(min=0), hue, value, a_col.chroma)
+        spectrum = np.add(np.subtract(a_col.spectrum, b_col.spectrum), a_col.spectrum).clip(min=0)
+        return MunsellSample(spectrum, hue, value, a_col.chroma)
 
 
     def insert_overchromas(self):
@@ -225,6 +232,7 @@ class ExpandedMunsellSampleDatabase(MunsellSampleDatabase):
 
         for it in insertions:
             self.cursor.execute("INSERT INTO colors VALUES (?, ?, ?, ?)", it)
+
 
 class InterpolatedMunsellColorDatabase(ExpandedMunsellSampleDatabase):
     # The Munsell space is continuous, but we only have samples. These
@@ -352,18 +360,20 @@ class MunsellColor(color.Color):
 def complement(hue):
     return (hue + 50) % 100
 
-def mod_additive_proportional(a, b, proportion, mod=100):
-    if abs(a - b) < 50:
-        return additive_proportional(a, b, proportion)
-    elif a < b:
-        return additive_proportional(a+mod, b, proportion) % mod
-    else:
-        return additive_proportional(a, b+mod, proportion) % mod
 
-def additive_proportional(a, b, proportion):
-    return a * proportion + b * (1 - proportion)
+def numerical_mix(a, b, proportion):
 
-def additive_proportional_color(a, b, proportion):
+    def mod_additive_proportional(a, b, proportion, mod=100):
+        if abs(a - b) < 50:
+            return additive_proportional(a, b, proportion)
+        elif a < b:
+            return additive_proportional(a+mod, b, proportion) % mod
+        else:
+            return additive_proportional(a, b+mod, proportion) % mod
+
+    def additive_proportional(a, b, proportion):
+        return a * proportion + b * (1 - proportion)
+
     hue = mod_additive_proportional(a.hue, b.hue, proportion)
     value = additive_proportional(a.value, b.value, proportion)
     chroma = additive_proportional(a.chroma, b.chroma, proportion)
@@ -372,7 +382,7 @@ def additive_proportional_color(a, b, proportion):
 def numerical_ladder(a, b, steps):
     # todo: never goes through 0() even if that's the short road
     count = steps - 1
-    return [additive_proportional_color(b, a, float(x)/count) for x in range(steps)]
+    return [numerical_mix(b, a, float(x)/count) for x in range(steps)]
 
 def mix_ladder(a, b, steps):
     count = steps - 1.0

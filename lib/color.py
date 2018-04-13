@@ -26,7 +26,7 @@ class Color():
         r = np.sum(np.multiply(self.spectrum, observers.red))
         g = np.sum(np.multiply(self.spectrum, observers.green))
         b = np.sum(np.multiply(self.spectrum, observers.blue))
-        return np.array([self.color_part(x) for x in [r, g, b]])
+        return [self.color_part(x) for x in [r, g, b]]
 
     def to_hex(self):
         return "{0:02x}{1:02x}{2:02x}".format(*(self.to_rgb()*255).astype(int))
@@ -51,6 +51,15 @@ class Color():
 
     def p(self, num):
         return Color(self.spectrum, num, self.name)
+
+    def stats_dict(self):
+        rgb = self.to_rgb()
+        return {
+            "name": self.name,
+            "rgb": rgb,
+            "rgb255": [int(x * 255) for x in rgb],
+            "hex": "#{0:02x}{1:02x}{2:02x}".format(*[int(x * 255) for x in rgb])
+        }
 
 
 class Mix(Color):
