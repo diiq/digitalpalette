@@ -110,8 +110,8 @@ class ExpandedMunsellSampleDatabase(MunsellSampleDatabase):
     def __init__(self):
         super().__init__()
         self.insert_overchromas()
-        self.insert_whites_and_blacks()
         self.insert_grays()
+        self.insert_whites_and_blacks()
 
     # Use titanium white and bone black for 0 and 10 values. Lies.
     def insert_whites_and_blacks(self):
@@ -119,7 +119,7 @@ class ExpandedMunsellSampleDatabase(MunsellSampleDatabase):
         black = self.color_list[1486]
         i = len(self.color_list) - 1
         for doublehue in range(5, 201, 5):
-            for chroma in range(0, 6, 2):
+            for chroma in range(0, 2, 2):
                 hue = doublehue / 2.0
 
                 nblack = black.p(1)
@@ -177,7 +177,7 @@ class ExpandedMunsellSampleDatabase(MunsellSampleDatabase):
         i = len(self.color_list) - 1
         for doublehue in range(5, 201, 5):
             hue = doublehue / 2.0
-            for value in range(0, 10):
+            for value in range(2, 10):
                 this_color = self.get_color_for(hue, value, chroma)
                 comp = self.get_color_for(complement(hue), value, chroma)
                 sample = self.find_grayest(this_color, comp)
