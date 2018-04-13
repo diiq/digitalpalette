@@ -35,7 +35,7 @@ class Color():
         return [self.color_part(x) for x in [r, g, b]]
 
     def to_hex(self):
-        return "{0:02x}{1:02x}{2:02x}".format(*(self.to_rgb()*255).astype(int))
+        return "{0:02x}{1:02x}{2:02x}".format(*[int(x * 255) for x in  self.to_rgb()])
 
     def to_str(self):
         return "{0}: rgb({1}, {2}, {3})".format(self.name, *[int(x * 255) for x in self.to_rgb()])

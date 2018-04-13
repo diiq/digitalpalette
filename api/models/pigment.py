@@ -18,7 +18,7 @@ class Pigment(Model, db.Model):
     def short_dict(self):
         return {
             'id': self.id,
-            'rgb': self.color().to_rgb().tolist(),
+            'rgb': self.color().to_rgb(),
             'hex': self.color().to_hex(),
             'name': self.name,
             'url': route_for('pigment', pigment_id=self.id)
@@ -27,7 +27,7 @@ class Pigment(Model, db.Model):
     def full_dict(self):
         return {
             'id': self.id,
-            'rgb': self.color().to_rgb().tolist(),
+            'rgb': self.color().to_rgb(),
             'hex': self.color().to_hex(),
             'name': self.name,
             'spectrum': self.spectrum,

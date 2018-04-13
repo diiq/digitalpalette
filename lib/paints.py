@@ -24,7 +24,7 @@ def load_paints(file=data_file):
     for paint in spectra:
         paints[paint[0]] = (np.array([min(100+OFFSET, max(float(f), OFFSET + .001)) for f in paint[1:]]) - OFFSET)/DIVISOR
 
-    desired_frequencies = range(390, 831, 5)
+    desired_frequencies = range(380, 731, 10)
     for name in paints:
         paints[name] = np.array([color.interpolate(frequencies, paints[name], x) for x in desired_frequencies])
 
